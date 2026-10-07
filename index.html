@@ -1060,35 +1060,35 @@ document.addEventListener("DOMContentLoaded", function () {
     const phEl      = document.getElementById("ph");
     const phBarEl   = document.getElementById("phBar");
 
-    const TOPIC_SENSOR       = "esp32/IEAOCM_sensor";
-    const TOPIC_STATUS       = "esp32/status";
-    const TOPIC_CONTROL      = "esp32/control";
-    const TOPIC_WIFI_CONFIG  = "esp32/wifi_config";      
-    const TOPIC_WIFI_ACK     = "esp32/wifi_config_ack";  
-    const TOPIC_WIFI_SCAN_REQ = "esp32/wifi_scan_request";
-    const TOPIC_WIFI_SCAN_RES = "esp32/wifi_scan_result"; 
-    const TOPIC_WIFI_INFO     = "esp32/wifi_info";        
-    const TOPIC_WIFI_RESET_REQ = "esp32/wifi_reset_request";
-    const TOPIC_WIFI_SAVED_LIST = "esp32/wifi_saved_list";  
+    const TOPIC_SENSOR       = "ieaocm/php2ueuh/IEAOCM_sensor";
+    const TOPIC_STATUS       = "ieaocm/php2ueuh/status";
+    const TOPIC_CONTROL      = "ieaocm/php2ueuh/control";
+    const TOPIC_WIFI_CONFIG  = "ieaocm/php2ueuh/wifi_config";      
+    const TOPIC_WIFI_ACK     = "ieaocm/php2ueuh/wifi_config_ack";  
+    const TOPIC_WIFI_SCAN_REQ = "ieaocm/php2ueuh/wifi_scan_request";
+    const TOPIC_WIFI_SCAN_RES = "ieaocm/php2ueuh/wifi_scan_result"; 
+    const TOPIC_WIFI_INFO     = "ieaocm/php2ueuh/wifi_info";        
+    const TOPIC_WIFI_RESET_REQ = "ieaocm/php2ueuh/wifi_reset_request";
+    const TOPIC_WIFI_SAVED_LIST = "ieaocm/php2ueuh/wifi_saved_list";  
 
     // ── หัวข้อ MQTT สำหรับตั้งรอบเวลาผสม (Auto) จาก Dashboard ──
-    const TOPIC_AUTO_TIMER_CONFIG = "esp32/auto_timer_config"; // Dashboard -> ESP32
-    const TOPIC_AUTO_TIMER_ACK    = "esp32/auto_timer_ack";    // ESP32 -> Dashboard (ยืนยัน)
-    const TOPIC_AUTO_TIMER_INFO   = "esp32/auto_timer_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน + นับถอยหลัง)
+    const TOPIC_AUTO_TIMER_CONFIG = "ieaocm/php2ueuh/auto_timer_config"; // Dashboard -> ESP32
+    const TOPIC_AUTO_TIMER_ACK    = "ieaocm/php2ueuh/auto_timer_ack";    // ESP32 -> Dashboard (ยืนยัน)
+    const TOPIC_AUTO_TIMER_INFO   = "ieaocm/php2ueuh/auto_timer_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน + นับถอยหลัง)
 
     // ── ใหม่: หัวข้อ MQTT สำหรับตั้ง Setpoint ความชื้น (Auto) จาก Dashboard ──
-    const TOPIC_MOISTURE_CONFIG = "esp32/moisture_setpoint_config"; // Dashboard -> ESP32
-    const TOPIC_MOISTURE_ACK    = "esp32/moisture_setpoint_ack";    // ESP32 -> Dashboard (ยืนยัน)
-    const TOPIC_MOISTURE_INFO   = "esp32/moisture_setpoint_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
+    const TOPIC_MOISTURE_CONFIG = "ieaocm/php2ueuh/moisture_setpoint_config"; // Dashboard -> ESP32
+    const TOPIC_MOISTURE_ACK    = "ieaocm/php2ueuh/moisture_setpoint_ack";    // ESP32 -> Dashboard (ยืนยัน)
+    const TOPIC_MOISTURE_INFO   = "ieaocm/php2ueuh/moisture_setpoint_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
 
     // ── ใหม่: หัวข้อ MQTT สำหรับรอบเวลา Air Pump (Auto) จาก Dashboard ──
-    const TOPIC_AIRPUMP_TIMER_CONFIG = "esp32/airpump_timer_config"; // Dashboard -> ESP32
-    const TOPIC_AIRPUMP_TIMER_ACK    = "esp32/airpump_timer_ack";    // ESP32 -> Dashboard (ยืนยัน)
-    const TOPIC_AIRPUMP_TIMER_INFO   = "esp32/airpump_timer_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
+    const TOPIC_AIRPUMP_TIMER_CONFIG = "ieaocm/php2ueuh/airpump_timer_config"; // Dashboard -> ESP32
+    const TOPIC_AIRPUMP_TIMER_ACK    = "ieaocm/php2ueuh/airpump_timer_ack";    // ESP32 -> Dashboard (ยืนยัน)
+    const TOPIC_AIRPUMP_TIMER_INFO   = "ieaocm/php2ueuh/airpump_timer_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
 
     // ── ใหม่: หัวข้อ MQTT สำหรับเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ จาก Dashboard ──
-    const TOPIC_AUTO_ENABLE_CONFIG = "esp32/auto_enable_config"; // Dashboard -> ESP32
-    const TOPIC_AUTO_ENABLE_INFO   = "esp32/auto_enable_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
+    const TOPIC_AUTO_ENABLE_CONFIG = "ieaocm/php2ueuh/auto_enable_config"; // Dashboard -> ESP32
+    const TOPIC_AUTO_ENABLE_INFO   = "ieaocm/php2ueuh/auto_enable_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
 
     const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', {
         reconnectPeriod: 2000,
@@ -1272,17 +1272,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = JSON.parse(message.toString());
             lastMessageTime = Date.now();
 
-            // [แก้ปัญหา #3] บังคับทศนิยม 1 ตำแหน่งฝั่ง dashboard เป็นตัวกันสองชั้น
-            // เผื่อค่าที่ยิงมายังไม่ผ่านการ format จากฝั่ง ESP32
+            
             if (data.mois !== undefined) {
                 const v = Math.min(Math.max(Math.round(Number(data.mois)), 0), 100);
                 moisEl.textContent = v;
                 moisBarEl.style.width = v + "%";
             }
             if (data.temp !== undefined) {
-                const v = Number(data.temp).toFixed(1);
-                tempEl.textContent = v;
-                tempBarEl.style.width = Math.min(Math.max(v, 0), 100) + "%";
+            const v = Math.round(Number(data.temp));
+            tempEl.textContent = v;
+            tempBarEl.style.width = Math.min(Math.max(v, 0), 100) + "%";
             }
             if (data.ph !== undefined) {
                 const v = Number(data.ph).toFixed(1);
