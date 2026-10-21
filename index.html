@@ -531,7 +531,7 @@ body::before {
     color: #06b6d4;
 }
 
-/* ─── ใหม่: แผงเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ (ใช้ได้เฉพาะโหมด Auto) ─── */
+/* ─── แผงเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ (ใช้ได้เฉพาะโหมด Auto) ─── */
 .auto-enable-panel {
     padding: 18px 22px;
     background: rgba(255,255,255,.65);
@@ -958,7 +958,7 @@ body::before {
                 </div>
             </div>
 
-            <!-- ══ ใหม่: เปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ — ใช้ได้เฉพาะโหมด Auto ══ -->
+            <!-- ══ เปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ — ใช้ได้เฉพาะโหมด Auto ══ -->
             <div class="auto-enable-panel" id="autoEnablePanel">
                 <div class="auto-enable-title">⚙️ เปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์</div>
                 <div class="auto-enable-row">
@@ -1003,18 +1003,14 @@ body::before {
                 <div class="auto-timer-current" id="autoTimerCurrent">กำลังโหลดค่าปัจจุบันจากเครื่อง...</div>
             </div>
 
-            <!-- ══ ใหม่: ตั้งค่า Setpoint ความชื้น — ใช้ได้เฉพาะโหมด Auto ══ -->
+            <!-- ══ ตั้งค่า Setpoint ความชื้น (ค่าเดียว) — ใช้ได้เฉพาะโหมด Auto ══ -->
             <div class="auto-timer-config" id="moistureSetpointConfig">
                 <div class="auto-timer-title">💧 ตั้งค่า Setpoint ความชื้น (Auto)</div>
-                <div class="auto-timer-sub">รดน้ำอัตโนมัติเมื่อความชื้นต่ำกว่าค่าที่ตั้ง และหยุดเมื่อถึงค่าสูงสุด (0 - 100%)</div>
-                <div class="auto-timer-fields">
+                <div class="auto-timer-sub">รดน้ำอัตโนมัติเมื่อความชื้นต่ำกว่าค่าที่ตั้ง และหยุดเมื่อความชื้นถึงค่าที่ตั้ง (0 - 100%)</div>
+                <div class="auto-timer-fields" style="grid-template-columns:1fr;">
                     <div class="auto-timer-field">
-                        <label for="moisLowInput">ค่าต่ำสุด (%)</label>
-                        <input type="number" id="moisLowInput" min="0" max="100" step="1" placeholder="40">
-                    </div>
-                    <div class="auto-timer-field">
-                        <label for="moisHighInput">ค่าสูงสุด (%)</label>
-                        <input type="number" id="moisHighInput" min="0" max="100" step="1" placeholder="60">
+                        <label for="moisSetInput">ค่าความชื้นที่ต้องการ (%)</label>
+                        <input type="number" id="moisSetInput" min="0" max="100" step="1" placeholder="20">
                     </div>
                 </div>
                 <button class="auto-timer-save-btn" id="moistureSaveBtn">บันทึก Setpoint ความชื้น</button>
@@ -1022,7 +1018,7 @@ body::before {
                 <div class="auto-timer-current" id="moistureCurrent">กำลังโหลดค่าปัจจุบันจากเครื่อง...</div>
             </div>
 
-            <!-- ══ ใหม่: ตั้งรอบเวลา Air Pump — ใช้ได้เฉพาะโหมด Auto ══ -->
+            <!-- ══ ตั้งรอบเวลา Air Pump — ใช้ได้เฉพาะโหมด Auto ══ -->
             <div class="auto-timer-config" id="airpumpTimerConfig">
                 <div class="auto-timer-title">🌬️ ตั้งค่ารอบเวลา Air Pump (Auto)</div>
                 <div class="auto-timer-sub">กำหนดได้เอง — เปิดปั๊มลมกี่นาที แล้วพักกี่นาที (1 - 720 นาที)</div>
@@ -1076,17 +1072,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const TOPIC_AUTO_TIMER_ACK    = "ieaocm/php2ueuh/auto_timer_ack";    // ESP32 -> Dashboard (ยืนยัน)
     const TOPIC_AUTO_TIMER_INFO   = "ieaocm/php2ueuh/auto_timer_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน + นับถอยหลัง)
 
-    // ── ใหม่: หัวข้อ MQTT สำหรับตั้ง Setpoint ความชื้น (Auto) จาก Dashboard ──
+    // ── หัวข้อ MQTT สำหรับตั้ง Setpoint ความชื้น (Auto) จาก Dashboard ──
     const TOPIC_MOISTURE_CONFIG = "ieaocm/php2ueuh/moisture_setpoint_config"; // Dashboard -> ESP32
     const TOPIC_MOISTURE_ACK    = "ieaocm/php2ueuh/moisture_setpoint_ack";    // ESP32 -> Dashboard (ยืนยัน)
     const TOPIC_MOISTURE_INFO   = "ieaocm/php2ueuh/moisture_setpoint_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
 
-    // ── ใหม่: หัวข้อ MQTT สำหรับรอบเวลา Air Pump (Auto) จาก Dashboard ──
+    // ── หัวข้อ MQTT สำหรับรอบเวลา Air Pump (Auto) จาก Dashboard ──
     const TOPIC_AIRPUMP_TIMER_CONFIG = "ieaocm/php2ueuh/airpump_timer_config"; // Dashboard -> ESP32
     const TOPIC_AIRPUMP_TIMER_ACK    = "ieaocm/php2ueuh/airpump_timer_ack";    // ESP32 -> Dashboard (ยืนยัน)
     const TOPIC_AIRPUMP_TIMER_INFO   = "ieaocm/php2ueuh/airpump_timer_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
 
-    // ── ใหม่: หัวข้อ MQTT สำหรับเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ จาก Dashboard ──
+    // ── หัวข้อ MQTT สำหรับเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ จาก Dashboard ──
     const TOPIC_AUTO_ENABLE_CONFIG = "ieaocm/php2ueuh/auto_enable_config"; // Dashboard -> ESP32
     const TOPIC_AUTO_ENABLE_INFO   = "ieaocm/php2ueuh/auto_enable_info";   // ESP32 -> Dashboard (ค่าปัจจุบัน)
 
@@ -1128,9 +1124,9 @@ document.addEventListener("DOMContentLoaded", function () {
         client.subscribe(TOPIC_AUTO_TIMER_INFO);
         client.subscribe(TOPIC_MOISTURE_ACK);
         client.subscribe(TOPIC_MOISTURE_INFO);
-        client.subscribe(TOPIC_AIRPUMP_TIMER_ACK);   // ใหม่
-        client.subscribe(TOPIC_AIRPUMP_TIMER_INFO);  // ใหม่
-        client.subscribe(TOPIC_AUTO_ENABLE_INFO);    // ใหม่
+        client.subscribe(TOPIC_AIRPUMP_TIMER_ACK);
+        client.subscribe(TOPIC_AIRPUMP_TIMER_INFO);
+        client.subscribe(TOPIC_AUTO_ENABLE_INFO);
         offlineTimer = setTimeout(function () { statusReady = true; }, 4000);
     });
 
@@ -1211,12 +1207,12 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // ── ใหม่: ผลบันทึก Setpoint ความชื้น ──
+        // ── ผลบันทึก Setpoint ความชื้น ──
         if (topic === TOPIC_MOISTURE_ACK) {
             try {
                 const ack = JSON.parse(message.toString());
                 if (ack.status === 'saved') {
-                    showMoistureStatus('saved', '✅ บันทึก Setpoint แล้ว: ต่ำสุด ' + ack.mois_low + '% / สูงสุด ' + ack.mois_high + '%');
+                    showMoistureStatus('saved', '✅ บันทึก Setpoint แล้ว: รดน้ำเมื่อความชื้นต่ำกว่า ' + ack.mois_set + '%');
                 } else {
                     showMoistureStatus('error', '⚠️ ' + (ack.message || 'บันทึกไม่สำเร็จ'));
                 }
@@ -1226,7 +1222,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // ── ใหม่: ค่า Setpoint ความชื้นปัจจุบัน ──
+        // ── ค่า Setpoint ความชื้นปัจจุบัน ──
         if (topic === TOPIC_MOISTURE_INFO) {
             try {
                 const info = JSON.parse(message.toString());
@@ -1235,7 +1231,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // ── ใหม่: ผลบันทึกรอบเวลา Air Pump ──
+        // ── ผลบันทึกรอบเวลา Air Pump ──
         if (topic === TOPIC_AIRPUMP_TIMER_ACK) {
             try {
                 const ack = JSON.parse(message.toString());
@@ -1250,7 +1246,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // ── ใหม่: ค่ารอบเวลาปัจจุบัน + นับถอยหลังของ Air Pump ──
+        // ── ค่ารอบเวลาปัจจุบัน + นับถอยหลังของ Air Pump ──
         if (topic === TOPIC_AIRPUMP_TIMER_INFO) {
             try {
                 const info = JSON.parse(message.toString());
@@ -1259,7 +1255,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // ── ใหม่: สถานะเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ ──
+        // ── สถานะเปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ ──
         if (topic === TOPIC_AUTO_ENABLE_INFO) {
             try {
                 const info = JSON.parse(message.toString());
@@ -1552,9 +1548,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 8000);
     });
 
-    /* ── ใหม่: ตั้งค่า Setpoint ความชื้น (Auto) ── */
-    const moisLowInput    = document.getElementById('moisLowInput');
-    const moisHighInput   = document.getElementById('moisHighInput');
+    /* ── ตั้งค่า Setpoint ความชื้น (ค่าเดียว) ── */
+    const moisSetInput    = document.getElementById('moisSetInput');
     const moistureSaveBtn = document.getElementById('moistureSaveBtn');
     const moistureStatus  = document.getElementById('moistureStatus');
     const moistureCurrent = document.getElementById('moistureCurrent');
@@ -1565,20 +1560,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function renderMoistureInfo(info) {
-        // อัปเดตค่าในช่องกรอกเฉพาะตอนที่ผู้ใช้ไม่ได้กำลังพิมพ์อยู่ กันค่าที่พิมพ์ค้างโดนทับ
-        if (document.activeElement !== moisLowInput  && info.mois_low  !== undefined) moisLowInput.value  = info.mois_low;
-        if (document.activeElement !== moisHighInput && info.mois_high !== undefined) moisHighInput.value = info.mois_high;
-
+        // อัปเดตช่องกรอกเฉพาะตอนที่ผู้ใช้ไม่ได้กำลังพิมพ์อยู่
+        if (document.activeElement !== moisSetInput && info.mois_set !== undefined) {
+            moisSetInput.value = info.mois_set;
+        }
         moistureCurrent.textContent =
-            'Setpoint ปัจจุบัน: รดน้ำเมื่อต่ำกว่า ' + info.mois_low + '% • หยุดเมื่อถึง ' + info.mois_high + '%';
+            'Setpoint ปัจจุบัน: ' + info.mois_set + '% • ต่ำกว่านี้รดน้ำ (Solenoid ON) / ถึงหรือสูงกว่านี้หยุด (Solenoid OFF)';
     }
 
     moistureSaveBtn.addEventListener('click', function () {
-        const low  = parseInt(moisLowInput.value, 10);
-        const high = parseInt(moisHighInput.value, 10);
+        const setVal = parseInt(moisSetInput.value, 10);
 
-        if (isNaN(low) || isNaN(high) || low < 0 || high > 100 || low >= high) {
-            showMoistureStatus('error', 'กรุณากรอกค่า 0 - 100% และค่าต่ำสุดต้องน้อยกว่าค่าสูงสุด');
+        if (isNaN(setVal) || setVal < 0 || setVal > 100) {
+            showMoistureStatus('error', 'กรุณากรอกค่า 0 - 100%');
             return;
         }
         if (!client.connected) {
@@ -1590,7 +1584,7 @@ document.addEventListener("DOMContentLoaded", function () {
         moistureSaveBtn.textContent = 'กำลังบันทึก...';
         showMoistureStatus('saving', 'กำลังส่งค่า Setpoint ไปยังเครื่อง...');
 
-        client.publish(TOPIC_MOISTURE_CONFIG, JSON.stringify({ mois_low: low, mois_high: high }));
+        client.publish(TOPIC_MOISTURE_CONFIG, JSON.stringify({ mois_set: setVal }));
 
         // เผื่อไม่มี ack กลับมา
         setTimeout(function () {
@@ -1602,7 +1596,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 8000);
     });
 
-    /* ── ใหม่: ตั้งรอบเวลา Air Pump (Auto) ── */
+    /* ── ตั้งรอบเวลา Air Pump (Auto) ── */
     const airOnMinInput       = document.getElementById('airOnMinInput');
     const airOffMinInput      = document.getElementById('airOffMinInput');
     const airpumpTimerSaveBtn = document.getElementById('airpumpTimerSaveBtn');
@@ -1653,7 +1647,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 8000);
     });
 
-    /* ── ใหม่: เปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ (ใช้ได้เฉพาะโหมด Auto) ── */
+    /* ── เปิด/ปิดการทำงานอัตโนมัติรายอุปกรณ์ (ใช้ได้เฉพาะโหมด Auto) ── */
     const enableMixToggle      = document.getElementById('enableMixToggle');
     const enableSolenoidToggle = document.getElementById('enableSolenoidToggle');
     const enableAirpumpToggle  = document.getElementById('enableAirpumpToggle');
@@ -1704,7 +1698,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAutoChip('Solenoid', val);
     }
 
-    /* ── Air Pump — ตอนนี้มีทำงานอัตโนมัติได้แล้ว จึงมี auto chip ด้วย ── */
+    /* ── Air Pump — มีทำงานอัตโนมัติได้ จึงมี auto chip ด้วย ── */
     function setAirpumpState(val, userInitiated) {
         states.airpump = val;
         const btn  = document.getElementById('btnAirpump');
